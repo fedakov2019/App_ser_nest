@@ -16,6 +16,7 @@ model UsersP1 {
   id Int @id @default(autoincrement())
   Login String  @unique
   Password String 
+  Salt String
   Acces Boolean 
   RefrechToken String? 
 }

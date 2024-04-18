@@ -1,15 +1,12 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { UsersService } from './app.service';
-import { PrismaClient } from '@prisma/client';
-const prism= new PrismaClient();
+import { UsersService1 } from './app.service';
+
 @Controller('/api')
 export class AppController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(private readonly userService: UsersService1) {}
 
   @Get('/users/page=:page/count=:count')
   async getUser(@Param('page') page: string, @Param('count') count: string) {
-    const user= await prism.$queryRaw`select * from usersP1;`;
-    console.log(user);
     return await this.userService.getUser(page, count);
   }
 }

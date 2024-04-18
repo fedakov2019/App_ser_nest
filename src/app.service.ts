@@ -5,7 +5,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { json } from 'sequelize';
 
 @Injectable()
-export class UsersService {
+export class UsersService1 {
   constructor(
     private readonly connection: Sequelize,
     // ...
