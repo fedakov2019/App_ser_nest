@@ -32,7 +32,7 @@ export class AuthService {
       options,
     );
 
-    return newUser;
+    return accesToken;
   }
   async signIn(login: string, password: string, acces: boolean) {}
 }

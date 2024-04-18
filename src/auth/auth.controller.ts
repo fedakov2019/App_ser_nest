@@ -8,13 +8,16 @@ import {
 } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { GetSessionInfoDto, SignUpBodyDto, SignInBodyDto } from './dtoauth';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
+  constructor(private autchService: AuthService) {}
+
   @Post('sign-up')
   @ApiCreatedResponse()
   signUp(@Body() body: SignUpBodyDto) {
-    return null;
+    return this.autchService.signUp(body.login, body.password, body.access);
   }
   @Post('sign-in')
   @ApiOkResponse()
