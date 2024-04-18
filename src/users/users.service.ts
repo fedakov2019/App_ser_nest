@@ -7,7 +7,10 @@ export class UsersService {
   findByName(login: string) {
     return this.db.usersP1.findFirst({ where: { login } });
   }
-  create(login: string, password: string, sals: string, acces: boolean) {
-    return this.db.usersP1.create({ data: { login, password, sals, acces } });
+  create(login: string, password: string, salt: string, acces: boolean) {
+    return this.db.usersP1.create({ data: { login, password, salt, acces } });
+  }
+  update( id:number,token:string) {
+    return this.db.usersP1.update({where: {id:id}, data:{refrechtoken:token} });
   }
 }

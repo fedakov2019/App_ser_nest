@@ -24,10 +24,8 @@ export class SignInBodyDto {
     example: '1234',
   })
   password: string;
-  @ApiProperty({
-    example: 'true',
-  })
-  access: boolean;
+ 
+  
 }
 
 export class GetSessionInfoDto {

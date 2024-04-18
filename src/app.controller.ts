@@ -1,9 +1,9 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { UsersService1 } from './app.service';
+import { AppService } from './app.service';
 
-@Controller('/api')
+@Controller()
 export class AppController {
-  constructor(private readonly userService: UsersService1) {}
+  constructor(private readonly userService: AppService) {}
 
   @Get('/users/page=:page/count=:count')
   async getUser(@Param('page') page: string, @Param('count') count: string) {
