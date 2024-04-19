@@ -9,12 +9,10 @@ datasource db {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model UsersP1 {
-  id           Int  @default(autoincrement()) @unique
-  login        String  @db.NVarChar(50) @unique
+  id           Int     @unique @default(autoincrement())
+  login        String  @unique @db.NVarChar(50)
   password     String  @db.NVarChar(150)
-  salt         String  @db.NVarChar(20)
+  salt         String  @db.NVarChar(150)
   acces        Boolean
   refrechtoken String? @db.NVarChar(Max)
-
-
 }

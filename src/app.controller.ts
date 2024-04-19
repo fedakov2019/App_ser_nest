@@ -1,12 +1,19 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-
+import { ApiOkResponse, ApiProperty } from '@nestjs/swagger';
+class HelloWorldDto {
+  @ApiProperty()
+  message: string;
+}
 @Controller()
 export class AppController {
-  constructor(private readonly userService: AppService) {}
+  constructor(private readonly appService: AppService) {}
 
-  @Get('/users/page=:page/count=:count')
-  async getUser(@Param('page') page: string, @Param('count') count: string) {
-    return await this.userService.getUser(page, count);
+  @Get()
+  @ApiOkResponse({
+    type: HelloWorldDto,
+  })
+  getHello(): HelloWorldDto {
+    return { message: this.appService.getHello() };
   }
 }

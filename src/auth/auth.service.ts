@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { PasswordService } from './password.service';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
@@ -10,7 +14,7 @@ export class AuthService {
     private passwordService: PasswordService,
     private jwtService: JwtService,
   ) {}
- async signUp(login: string, password: string, acces: boolean) {
+  async signUp(login: string, password: string, acces: boolean) {
     const user = await this.userService.findByName(login);
     if (user) {
       throw new BadRequestException({ type: 'login - уже существует' });
@@ -18,49 +22,46 @@ export class AuthService {
     const salt = this.passwordService.getSalt();
     const hach = this.passwordService.getHash(password, salt);
     const newUser = await this.userService.create(login, hach, salt, acces);
-    const accesToken = await this.jwtService.signAsync({
+    const refrechToken = await this.jwtService.signAsync({
       id: newUser.id,
       login: newUser.login,
       acces: newUser.acces,
     });
-    const options: JwtSignOptions = {
-      secret: process.env.JWT_SECRET_R,
-      expiresIn: '1d',
-    };
-    const refrechToken = await this.jwtService.signAsync(
-      { id: newUser.id, login: newUser.login, acces: newUser.acces },
-      options,
-    );
-    const newsu= await this.userService.update(newUser.id,refrechToken);
 
-    return {refrechToken,accesToken};
+    const newsu = await this.userService.update(newUser.id, refrechToken);
+    if (!newsu) {
+      throw new BadRequestException({ type: 'Ошибка записи' });
+    }
+    return { refrechToken };
   }
   async signIn(login: string, password: string) {
     const user = await this.userService.findByName(login);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({ type: 'Неверное имя или пароль' });
     }
-    
+
     const hash = this.passwordService.getHash(password, user.salt);
-    if (hash!==user.password) {
-      throw new UnauthorizedException();
+    if (hash !== user.password) {
+      throw new UnauthorizedException({ type: 'Неверное имя или пароль' });
     }
-    
-    const accesToken = await this.jwtService.signAsync({
+
+    const refrechToken = await this.jwtService.signAsync({
       id: user.id,
       login: user.login,
       acces: user.acces,
     });
+    const newsu = await this.userService.update(user.id, refrechToken);
+    if (!newsu) {
+      throw new BadRequestException({ type: 'Ошибка записи' });
+    }
     const options: JwtSignOptions = {
-      secret: process.env.JWT_SECRET_R,
-      expiresIn: '1d',
+      secret: process.env.JWT_SECRET_A,
+      expiresIn: '2h',
     };
-    const refrechToken = await this.jwtService.signAsync(
-      { id: user.id, login: user.login, acces: user.acces },
+    const accesToken = await this.jwtService.signAsync(
+      { id: newsu.id, login: newsu.login, acces: newsu.acces },
       options,
     );
-    const newsu= await this.userService.update(user.id,refrechToken);
-
-    return {refrechToken,accesToken};
+    return { refrechToken, accesToken };
   }
 }

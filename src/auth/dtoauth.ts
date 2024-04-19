@@ -24,8 +24,6 @@ export class SignInBodyDto {
     example: '1234',
   })
   password: string;
- 
-  
 }
 
 export class GetSessionInfoDto {
