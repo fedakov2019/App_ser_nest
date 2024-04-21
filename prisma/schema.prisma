@@ -8,11 +8,27 @@ datasource db {
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+
+model Roles {
+id Int    @id @unique @default(autoincrement())
+value String  @unique @db.NVarChar(50)
+description String? @db.NVarChar(100)
+user UsersP1[]
+}
+
 model UsersP1 {
   id           Int     @unique @default(autoincrement())
   login        String  @unique @db.NVarChar(50)
   password     String  @db.NVarChar(150)
   salt         String  @db.NVarChar(150)
-  acces        Boolean
   refrechtoken String? @db.NVarChar(Max)
+  rolesId        Int?
+  roles Roles? @relation(fields:[rolesId],references:[id])
+  
+  
+  
 }
+
+
+
+

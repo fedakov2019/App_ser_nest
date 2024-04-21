@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Response } from 'express';
 @Injectable()
 export class CookieService {
-  static tokenKey = 'access-token';
+  static tokenKey = 'refrech-token';
   setToken(res: Response, token: string) {
     res.cookie(CookieService.tokenKey, token, {
       httpOnly: true,

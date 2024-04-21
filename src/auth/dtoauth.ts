@@ -1,34 +1,41 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, isNotEmpty, MinLength } from 'class-validator';
+
 
 export class SignUpBodyDto {
   @ApiProperty({
     example: 'test',
   })
+  @IsNotEmpty({ message: 'логин не пустое значение' })
   login: string;
+  @MinLength(4, {
+    message: 'минимальная длинна пароля 3 символа',
+  })
   @ApiProperty({
     example: '1234',
   })
   password: string;
-  @ApiProperty({
-    example: 'true',
-  })
-  access: boolean;
+  
 }
 
 export class SignInBodyDto {
   @ApiProperty({
     example: 'test',
   })
+  @IsNotEmpty({ message: 'логин не пустое значение' })
   login: string;
   @ApiProperty({
     example: '1234',
+  })
+  @MinLength(4, {
+    message: 'минимальная длинна пароля 3 символа',
   })
   password: string;
 }
 
 export class GetSessionInfoDto {
   @ApiProperty({
-    example: '1',
+    example: 1,
   })
   id: number;
   @ApiProperty({
@@ -36,7 +43,11 @@ export class GetSessionInfoDto {
   })
   login: string;
   @ApiProperty({
-    example: 'true',
+    example: 1,
   })
-  access: boolean;
+  rolesId: number;
+  @ApiProperty()
+  'iat': number;
+  @ApiProperty()
+  'exp': number;
 }

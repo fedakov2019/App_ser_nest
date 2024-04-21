@@ -6,10 +6,12 @@ import { CookieService } from './cookie.service';
 
 import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
+import { RolesService } from 'src/roles/roles.service';
+import { RolesModule } from 'src/roles/roles.module';
 
 @Module({
   imports: [
-    UsersModule,
+    UsersModule, RolesModule,
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET_R,
