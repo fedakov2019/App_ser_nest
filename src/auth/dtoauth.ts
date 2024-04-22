@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, isNotEmpty, MinLength } from 'class-validator';
-
+import { IsInt, IsNotEmpty, MinLength } from 'class-validator';
 
 export class SignUpBodyDto {
   @ApiProperty({
@@ -15,8 +14,27 @@ export class SignUpBodyDto {
     example: '1234',
   })
   password: string;
-  
 }
+export class SignUpdateDto {
+  @ApiProperty({
+    example: 1,
+  })
+  @IsInt({ message: 'id не строка' })
+  id: number;
+  @ApiProperty({
+    example: 'test',
+  })
+  @IsNotEmpty({ message: 'логин не пустое значение' })
+  login: string;
+  @MinLength(4, {
+    message: 'минимальная длинна пароля 3 символа',
+  })
+  @ApiProperty({
+    example: '1234',
+  })
+  password: string;
+}
+
 
 export class SignInBodyDto {
   @ApiProperty({
@@ -46,6 +64,10 @@ export class GetSessionInfoDto {
     example: 1,
   })
   rolesId: number;
+  @ApiProperty({
+    example: 'USER',
+  })
+  valueRole: string;
   @ApiProperty()
   'iat': number;
   @ApiProperty()

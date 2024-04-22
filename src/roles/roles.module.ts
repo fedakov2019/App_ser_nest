@@ -7,6 +7,6 @@ import { DbModule } from 'src/db/db.module';
   imports: [DbModule],
   controllers: [RolesController],
   providers: [RolesService],
-  exports:[RolesService],
+  exports: [RolesService],
 })
 export class RolesModule {}

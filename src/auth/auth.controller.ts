@@ -4,15 +4,20 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Post,
   Res,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { GetSessionInfoDto, SignUpBodyDto, SignInBodyDto } from './dtoauth';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
@@ -30,7 +35,7 @@ export class AuthController {
 
   @Post('sign-up')
   @ApiCreatedResponse()
-  @ApiOperation({summary:'Создание пользователя'})
+  @ApiOperation({ summary: 'Создание пользователя' })
   async signUp(
     @Body() body: SignUpBodyDto,
     @Res({ passthrough: true }) res: Response,
@@ -38,7 +43,6 @@ export class AuthController {
     const { refrechToken } = await this.autchService.signUp(
       body.login,
       body.password,
-      
     );
     this.cookieService.setToken(res, refrechToken);
   }
@@ -90,4 +94,9 @@ export class AuthController {
   getSessionInfo(@SessionInfo() session: GetSessionInfoDto) {
     return session;
   }
+  @Delete('/deletUser/:id',delDeleteUser)
+  @Get('/user/:id',getUserID)
+  @Post('/register/:id',postUpdate_registr)
+
+
 }

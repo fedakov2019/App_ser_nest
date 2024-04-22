@@ -17,14 +17,15 @@ user UsersP1[]
 }
 
 model UsersP1 {
-  id           Int     @unique @default(autoincrement())
+  id           Int    @id  @unique @default(autoincrement())
   login        String  @unique @db.NVarChar(50)
   password     String  @db.NVarChar(150)
   salt         String  @db.NVarChar(150)
   refrechtoken String? @db.NVarChar(Max)
-  rolesId        Int?
-  roles Roles? @relation(fields:[rolesId],references:[id])
+  rolesId        Int
   
+  roles Roles @relation(fields:[rolesId],references:[id])
+
   
   
 }

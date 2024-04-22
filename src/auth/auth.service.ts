@@ -17,7 +17,7 @@ export class AuthService {
     private userService: UsersService,
     private passwordService: PasswordService,
     private jwtService: JwtService,
-    private roleservice:RolesService,
+    private roleservice: RolesService,
   ) {}
   async signUp(login: string, password: string) {
     const user = await this.userService.findByName(login);
@@ -26,22 +26,24 @@ export class AuthService {
     }
     const salt = this.passwordService.getSalt();
     const hach = this.passwordService.getHash(password, salt);
-    const role = await this.roleservice.getRoleByValue("USER");
-    
-    if (role) {
-  
-    const newUser = await this.userService.create(login, hach, salt, role.id);
-    const refrechToken = await this.jwtService.signAsync({
-      id: newUser.id,
-      login: newUser.login,
-      rolesId: newUser.rolesId,
-    });
+    const role = await this.roleservice.getRoleByValue('USER');
 
-    const newsu = await this.userService.update(newUser.id, refrechToken);
-    if (!newsu) {
-      throw new BadRequestException({ type: 'Ошибка записи' });
+    if (role) {
+      const newUser = await this.userService.create(login, hach, salt, role.id);
+      const refrechToken = await this.jwtService.signAsync({
+        id: newUser.id,
+        login: newUser.login,
+        rolesId: newUser.rolesId,
+        valueRole: 'USER',
+      });
+
+      const newsu = await this.userService.update(newUser.id, refrechToken);
+      if (!newsu) {
+        throw new BadRequestException({ type: 'Ошибка записи' });
+      }
+      return { refrechToken };
     }
-    return { refrechToken };}{
+    {
       throw new HttpException('Роль не найдена', HttpStatus.NOT_FOUND);
     }
   }
@@ -56,10 +58,12 @@ export class AuthService {
     if (!usern) {
       throw new UnauthorizedException({ type: 'не авторизован' });
     }
+    const role = await this.roleservice.getRoleById(usern.rolesId);
     const refrechToken = await this.jwtService.signAsync({
       id: usern.id,
       login: usern.login,
       rolesId: usern.rolesId,
+      valueRole: role?.value,
     });
     const newsu = await this.userService.update(usern.id, refrechToken);
     if (!newsu) {
@@ -70,7 +74,12 @@ export class AuthService {
       expiresIn: '2h',
     };
     const accesToken = await this.jwtService.signAsync(
-      { id: newsu.id, login: newsu.login, rolesId: newsu.rolesId },
+      {
+        id: newsu.id,
+        login: newsu.login,
+        rolesId: newsu.rolesId,
+        valueRole: role?.value,
+      },
       options,
     );
     return { refrechToken, accesToken };
@@ -100,11 +109,12 @@ export class AuthService {
     if (hash !== user.password) {
       throw new UnauthorizedException({ type: 'Неверное имя или пароль' });
     }
-
+    const role = await this.roleservice.getRoleById(user.rolesId);
     const refrechToken = await this.jwtService.signAsync({
       id: user.id,
       login: user.login,
       rolesId: user.rolesId,
+      valueRole: role?.value,
     });
     const newsu = await this.userService.update(user.id, refrechToken);
     if (!newsu) {
@@ -115,7 +125,12 @@ export class AuthService {
       expiresIn: '2h',
     };
     const accesToken = await this.jwtService.signAsync(
-      { id: newsu.id, login: newsu.login, rolesId: newsu.rolesId },
+      {
+        id: newsu.id,
+        login: newsu.login,
+        rolesId: newsu.rolesId,
+        valueRole: role?.value,
+      },
       options,
     );
     return { refrechToken, accesToken };
