@@ -25,6 +25,16 @@ export class AddRoleDto {
   })
   userId: number;
 }
+export class createdto {
+  id: number;
+  value: string;
+  description: string;
+}
 export class UserCount {
   totalCount: string;
+}
+export class roleiddto {
+  id: number;
+  description: string;
+  value: string;
 }

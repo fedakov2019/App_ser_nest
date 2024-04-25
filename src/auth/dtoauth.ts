@@ -34,7 +34,17 @@ export class SignUpdateDto {
   })
   password: string;
 }
-
+export class iduserdto {
+  id: number;
+  login: string;
+  rolesid: number;
+}
+export class signinResp {
+  accessToken: string;
+}
+export class signdeluser {
+  resultCode: number;
+}
 
 export class SignInBodyDto {
   @ApiProperty({

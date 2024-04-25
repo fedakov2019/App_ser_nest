@@ -19,6 +19,34 @@ export class AuthService {
     private jwtService: JwtService,
     private roleservice: RolesService,
   ) {}
+  async updateUserid(id: number, login: string, password: string) {
+    const salt = this.passwordService.getSalt();
+    const hach = this.passwordService.getHash(password, salt);
+    const user = await this.userService.UserId(id);
+    if (user) {
+      const role = await this.roleservice.getRoleById(user.rolesId);
+      const refrechToken = await this.jwtService.signAsync({
+        id: user.id,
+        login: login,
+        rolesId: user.rolesId,
+        valueRole: role,
+      });
+      const newsu = await this.userService.updateId(
+        user.id,
+        refrechToken,
+        login,
+        hach,
+        salt,
+      );
+      if (!newsu) {
+        throw new BadRequestException({ type: 'Ошибка записи' });
+      }
+      return newsu;
+    }
+    {
+      throw new HttpException('Пользователь не найдена', HttpStatus.NOT_FOUND);
+    }
+  }
   async signUp(login: string, password: string) {
     const user = await this.userService.findByName(login);
     if (user) {
@@ -134,5 +162,13 @@ export class AuthService {
       options,
     );
     return { refrechToken, accesToken };
+  }
+  async deletUser(id: number) {
+    const user = await this.userService.delete(id);
+    return user;
+  }
+  async getUserID(id: number) {
+    const user = await this.userService.UserId(id);
+    return user;
   }
 }

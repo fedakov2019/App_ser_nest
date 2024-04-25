@@ -7,7 +7,10 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
   HttpStatus,
+  Param,
+  ParseIntPipe,
   Post,
   Res,
   UseGuards,
@@ -18,12 +21,21 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { GetSessionInfoDto, SignUpBodyDto, SignInBodyDto } from './dtoauth';
+import {
+  GetSessionInfoDto,
+  SignUpBodyDto,
+  SignInBodyDto,
+  signinResp,
+  signdeluser,
+  iduserdto,
+} from './dtoauth';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { AuthGuard } from './auth.guard';
 import { Hesch_ref } from './hesch-ref.decorator';
 import { SessionInfo } from './session-info.decorator';
+import { Roles } from './roles-auth.decorator';
+import { AuthGuards } from './autthjwt.guard';
 @ApiTags('Авторизация')
 @Controller('auth')
 export class AuthController {
@@ -47,7 +59,8 @@ export class AuthController {
     this.cookieService.setToken(res, refrechToken);
   }
   @Post('sign-in')
-  @ApiOkResponse()
+  @ApiOperation({ summary: 'Проверка логин и пароля' })
+  @ApiOkResponse({ type: signinResp })
   @HttpCode(HttpStatus.OK)
   async signIn(
     @Body() body: SignInBodyDto,
@@ -62,6 +75,7 @@ export class AuthController {
   }
 
   @Post('sign-out')
+  @ApiOperation({ summary: 'Выход' })
   @ApiOkResponse()
   @HttpCode(HttpStatus.OK)
   async signOut(
@@ -76,7 +90,8 @@ export class AuthController {
     }
   }
   @Post('sign-refrech')
-  @ApiOkResponse()
+  @ApiOperation({ summary: 'Обнавление токенов' })
+  @ApiOkResponse({ type: signinResp })
   @HttpCode(HttpStatus.OK)
   async refrech(
     @Hesch_ref() tokenRef: string,
@@ -89,14 +104,48 @@ export class AuthController {
   }
 
   @Get('session')
+  @ApiOperation({ summary: 'Вход по токену' })
   @ApiOkResponse({ type: GetSessionInfoDto })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuards)
   getSessionInfo(@SessionInfo() session: GetSessionInfoDto) {
     return session;
   }
-  @Delete('/deletUser/:id',delDeleteUser)
-  @Get('/user/:id',getUserID)
-  @Post('/register/:id',postUpdate_registr)
-
-
+  @Delete('/deletUser/:id')
+  @Roles('ADMIN')
+  @ApiOkResponse({ type: signdeluser })
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Удаление пользователя' })
+  async delDeleteUser(@Param('id', ParseIntPipe) id: number) {
+    const user = await this.autchService.deletUser(id);
+    let resultCode: number;
+    if (user) {
+      resultCode = 0;
+      return resultCode;
+    }
+    {
+      throw new HttpException('Пользователь не найдена', HttpStatus.NOT_FOUND);
+    }
+  }
+  @Get('/user/:id')
+  @ApiOkResponse({ type: iduserdto })
+  @ApiOperation({ summary: 'Поиск пользователя по Id' })
+  async getUserID(@Param('id', ParseIntPipe) id: number) {
+    const user = await this.autchService.getUserID(id);
+    if (user) {
+      return { ...user };
+    }
+    {
+      throw new HttpException('Пользователь не найдена', HttpStatus.NOT_FOUND);
+    }
+  }
+  @Post('/register/:id')
+  @ApiOkResponse({ type: iduserdto })
+  @ApiOperation({ summary: 'Обновление данных пользователя по Id' })
+  async postUpdate_registr(
+    @Body() body: SignInBodyDto,
+    @Res({ passthrough: true }) res: Response,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return await this.autchService.updateUserid(id, body.login, body.password);
+  }
 }

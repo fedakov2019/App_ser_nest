@@ -24,4 +24,25 @@ export class UsersService {
       data: { refrechtoken: token },
     });
   }
+  async updateId(
+    id: number,
+    token: string,
+    login: string,
+    password: string,
+    salt: string,
+  ) {
+    return await this.db.usersP1.update({
+      where: { id: id },
+      data: { refrechtoken: token, login, password, salt },
+    });
+  }
+  async delete(id: number) {
+    return await this.db.usersP1.delete({ where: { id: id } });
+  }
+
+  async UserId(id: number) {
+    return await this.db.usersP1.findFirst({
+      where: { id: id },
+    });
+  }
 }
